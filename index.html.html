@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vishal Mishra - Software Engineer Portfolio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Three.js for 3D animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Custom styles for a polished look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090a0f;
+            background-image: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            color: #e2e8f0;
+            cursor: none; /* Hide default cursor */
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.5);
+        }
+        .hero-gradient-text {
+            background: linear-gradient(90deg, #4f46e5, #ec4899, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .section-title {
+            background: linear-gradient(90deg, #ec4899, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tag {
+            background-color: rgba(79, 70, 229, 0.2);
+            color: #a5b4fc;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        #hero-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .content-container {
+            position: relative;
+            z-index: 1;
+        }
+        /* Scroll Fade-in Animation */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Custom Cursor */
+        .cursor-light {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(79, 70, 229, 0.5);
+            box-shadow: 0 0 20px rgba(79, 70, 229, 1), 0 0 40px rgba(79, 70, 229, 1);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+            z-index: 9999;
+        }
+        .cert-link::after {
+            content: '\f35d'; /* Font Awesome external link icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-left: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .cert-link:hover::after {
+            opacity: 1;
+        }
+        /* Navigation Link Animations */
+        .nav-link {
+            transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+            text-shadow: 0 0 0 rgba(255, 255, 255, 0);
+        }
+        .nav-link:hover {
+            transform: translateY(-3px);
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+        .nav-link:active {
+            transform: translateY(-1px) scale(0.95);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Custom Cursor Light -->
+    <div class="cursor-light"></div>
+
+    <!-- 3D Background Canvas -->
+    <canvas id="hero-canvas"></canvas>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex-1">
+                        <a href="#" class="text-2xl font-bold hero-gradient-text">VM</a>
+                    </div>
+                    <nav class="hidden md:flex md:items-center md:space-x-8">
+                        <a href="#summary" class="text-gray-300 nav-link">About</a>
+                        <a href="#experience" class="text-gray-300 nav-link">Experience</a>
+                        <a href="#projects" class="text-gray-300 nav-link">Projects</a>
+                        <a href="#skills" class="text-gray-300 nav-link">Skills</a>
+                        <a href="#achievements" class="text-gray-300 nav-link">Achievements</a>
+                        <a href="#contact" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 nav-link">Contact</a>
+                    </nav>
+                    <div class="flex-1 flex justify-end">
+                         <div class="md:hidden">
+                            <button id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none">
+                                <i class="fas fa-bars text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden bg-black bg-opacity-80 backdrop-blur-sm">
+                <a href="#summary" class="block text-center py-3 text-gray-300 hover:bg-gray-800 hover:text-white">About</a>
+                <a href="#experience" class="block text-center py-3 text-gray-300 hover:bg-gray-800 hover:text-white">Experience</a>
+                <a href="#projects" class="block text-center py-3 text-gray-300 hover:bg-gray-800 hover:text-white">Projects</a>
+                <a href="#skills" class="block text-center py-3 text-gray-300 hover:bg-gray-800 hover:text-white">Skills</a>
+                <a href="#achievements" class="block text-center py-3 text-gray-300 hover:bg-gray-800 hover:text-white">Achievements</a>
+                <a href="#contact" class="block text-center py-3 text-gray-300 hover:bg-gray-800 hover:text-white">Contact</a>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Hero Section -->
+            <section id="hero" class="min-h-screen flex flex-col justify-center items-center text-center fade-in-section">
+                <div class="max-w-3xl">
+                    <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                        <span class="hero-gradient-text">Vishal Mishra</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-slate-300 mb-8">Aspiring Software Engineer | AI & Machine Learning Enthusiast</p>
+                    <div class="flex justify-center space-x-6 text-3xl">
+                        <a href="https://github.com/VishalMishraCSE" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-transform duration-300 hover:scale-110"><i class="fab fa-github"></i></a>
+                        <a href="https://www.linkedin.com/in/vishal-mishra-002727298" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-transform duration-300 hover:scale-110"><i class="fab fa-linkedin"></i></a>
+                        <a href="mailto:vishalmishra.csm@gmail.com" class="text-gray-400 hover:text-white transition-transform duration-300 hover:scale-110"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary Section -->
+            <section id="summary" class="py-16 lg:py-24 fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12"><span class="section-title">About Me</span></h2>
+                <div class="max-w-4xl mx-auto glass-card p-8 md:p-12">
+                    <p class="text-lg text-slate-300 leading-relaxed">
+                        Aspiring Software Engineer with a strong foundation in Computer Science (AI & ML) from CMR Engineering College. Skilled in data structures, algorithms, and core CS concepts, with hands-on experience in building scalable IoT, ML, and automation projects. Quick learner with strong engineering fundamentals, capable of collaborating in team environments to deliver production-ready solutions. Passionate about solving real-world problems and eager to contribute to impactful software products.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Experience Section -->
+            <section id="experience" class="py-16 lg:py-24 fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12"><span class="section-title">Experience</span></h2>
+                <div class="max-w-4xl mx-auto space-y-12">
+                    <div class="glass-card p-8 group">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-white">Developer Intern</h3>
+                                <p class="text-indigo-400 font-semibold text-lg">VISWAM AI</p>
+                            </div>
+                            <span class="text-sm text-slate-400">May 2025 - Present</span>
+                        </div>
+                        <ul class="mt-4 list-disc list-inside text-slate-300 space-y-2">
+                            <li>Built and deployed real-time AI applications using Python and Streamlit, automating document workflows.</li>
+                            <li>Worked on feature engineering, integrated LLMs, and tested prompts to enhance smart document automation.</li>
+                            <li>Collaborated with the team on deploying smart document automation solutions.</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card p-8 group">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-white">Team Lead</h3>
+                                <p class="text-indigo-400 font-semibold text-lg">Smart India Hackathon (SIH)</p>
+                            </div>
+                             <span class="text-sm text-slate-400">Sep 2023</span>
+                        </div>
+                        <ul class="mt-4 list-disc list-inside text-slate-300 space-y-2">
+                            <li>Built an AI-powered chatbot to provide real-time constitutional assistance, with 90% response accuracy for legal queries.</li>
+                            <li>Trained and fine-tuned NLP models for multilingual legal queries and integrated the solution with governance platforms.</li>
+                            <li>Collaborated with the team to build a user-friendly interface and integrate it into the digital governance platform.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="projects" class="py-16 lg:py-24 fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12"><span class="section-title">Projects</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                    <div class="glass-card p-6 flex flex-col h-full">
+                        <h3 class="text-xl font-bold text-white mb-2">Hospital Management System</h3>
+                        <p class="text-slate-400 flex-grow">A console-based application in Java using a MySQL database to manage patient records, doctor information, and appointments.</p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                             <span class="tag">Java</span><span class="tag">SQL</span><span class="tag">MySQL</span><span class="tag">JDBC</span>
+                        </div>
+                        <a href="#" class="mt-4 text-indigo-400 hover:text-indigo-300 font-semibold">View on GitHub <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col h-full">
+                        <h3 class="text-xl font-bold text-white mb-2">Agri_Rover</h3>
+                        <p class="text-slate-400 flex-grow">A solar-powered smart agricultural rover to automate seed sowing, ploughing, and fertilizer dispensing.</p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                             <span class="tag">Arduino</span><span class="tag">IoT</span><span class="tag">Automation</span>
+                        </div>
+                        <a href="https://github.com/VishalMishraCSE/Agri_Rover" target="_blank" class="mt-4 text-indigo-400 hover:text-indigo-300 font-semibold">View on GitHub <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col h-full">
+                        <h3 class="text-xl font-bold text-white mb-2">Network Intrusion Detection</h3>
+                        <p class="text-slate-400 flex-grow">An ML system to classify network attacks with 98.07% accuracy using Keras, featuring real-time alerts.</p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="tag">Python</span><span class="tag">Keras</span><span class="tag">ML</span><span class="tag">Security</span>
+                        </div>
+                         <a href="https://github.com/dhanushmetuku/Network-intrusion-detection-system" target="_blank" class="mt-4 text-indigo-400 hover:text-indigo-300 font-semibold">View on GitHub <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col h-full">
+                        <h3 class="text-xl font-bold text-white mb-2">Smart Terrace Farming</h3>
+                        <p class="text-slate-400 flex-grow">An IoT system using ESP8266 and Blynk to monitor plants and automate watering via a mobile app.</p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="tag">ESP8266</span><span class="tag">IoT</span><span class="tag">Blynk</span><span class="tag">Automation</span>
+                        </div>
+                         <a href="#" class="mt-4 text-gray-500 font-semibold cursor-not-allowed">GitHub Private</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section id="skills" class="py-16 lg:py-24 fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12"><span class="section-title">Skills</span></h2>
+                <div class="max-w-5xl mx-auto">
+                    <div class="flex flex-wrap justify-center gap-4 md:gap-6">
+                        <span class="tag text-lg">C++</span><span class="tag text-lg">Java</span><span class="tag text-lg">Python</span><span class="tag text-lg">Data Structures</span><span class="tag text-lg">Algorithms</span><span class="tag text-lg">OOPS</span><span class="tag text-lg">Prompt Engineering</span><span class="tag text-lg">SQL</span><span class="tag text-lg">Git</span><span class="tag text-lg">TensorFlow</span><span class="tag text-lg">Keras</span><span class="tag text-lg">Streamlit</span><span class="tag text-lg">Leadership</span><span class="tag text-lg">Problem Solving</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Education Section -->
+            <section id="education" class="py-16 lg:py-24 fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12"><span class="section-title">Education</span></h2>
+                 <div class="max-w-4xl mx-auto space-y-8">
+                    <div class="glass-card p-6">
+                        <h3 class="text-xl font-bold text-white">B.Tech in Computer Science (AI & ML)</h3>
+                        <p class="text-indigo-400">CMR Engineering College, Hyderabad</p>
+                        <p class="text-slate-400">2023 - 2027 | GPA: 8.81</p>
+                    </div>
+                     <div class="glass-card p-6">
+                        <h3 class="text-xl font-bold text-white">Intermediate (MPC)</h3>
+                        <p class="text-indigo-400">Narayana Junior College, Hyderabad</p>
+                        <p class="text-slate-400">2021 - 2023 | GPA: 9.35</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Achievements & Certifications Section -->
+            <section id="achievements" class="py-16 lg:py-24 fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12"><span class="section-title">Achievements & Certifications</span></h2>
+                <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+                    <!-- Achievements Column -->
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-bold text-center text-white mb-4">Awards</h3>
+                        <div class="glass-card p-6">
+                            <p class="font-semibold text-indigo-400">1st Place in TECHZ EXPO-2K23</p>
+                            <p class="text-slate-400 text-sm">CMR Engineering College - 2023</p>
+                        </div>
+                        <div class="glass-card p-6">
+                            <p class="font-semibold text-indigo-400">Project Selected for SIH 2024</p>
+                            <p class="text-slate-400 text-sm">National-level selection by CMR Engineering College - 2024</p>
+                        </div>
+                    </div>
+                    <!-- Certifications Column -->
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-bold text-center text-white mb-4">Certifications</h3>
+                        <a href="https://drive.google.com/file/d/1Is1Rqzo66IN8RBtN_9dwuFyNvmP1jEgf/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="block glass-card p-6 cert-link">
+                            <p class="font-semibold text-indigo-400">Google Analytics Certification</p>
+                            <p class="text-slate-400 text-sm">Google - 2025</p>
+                        </a>
+                        <a href="https://drive.google.com/file/d/1QBGNKtMxOzwJEXUAtcAVXX0Q6jwCjHTG/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="block glass-card p-6 cert-link">
+                            <p class="font-semibold text-indigo-400">AWS Intro to Generative AI</p>
+                            <p class="text-slate-400 text-sm">Amazon Web Services - 2025</p>
+                        </a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="block glass-card p-6 cert-link">
+                            <p class="font-semibold text-indigo-400">Internal Hackathon For SIH</p>
+                            <p class="text-slate-400 text-sm">CMR Engineering College - 2023</p>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer id="contact" class="border-t border-slate-800 mt-20 fade-in-section">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+                <h2 class="text-3xl font-bold mb-4">Get In Touch</h2>
+                <p class="text-slate-400 max-w-xl mx-auto mb-8">I'm currently seeking new opportunities and would love to hear from you. Feel free to reach out or connect with me on LinkedIn.</p>
+                <a href="https://www.linkedin.com/in/vishal-mishra-002727298" target="_blank" rel="noopener noreferrer" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-8 rounded-lg transition-all duration-300 text-lg nav-link">
+                    Say Hello on LinkedIn
+                </a>
+                <div class="flex justify-center space-x-6 text-2xl mb-8">
+                    <a href="https://github.com/VishalMishraCSE" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-transform duration-300 hover:scale-110"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/vishal-mishra-002727298" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-transform duration-300 hover:scale-110"><i class="fab fa-linkedin"></i></a>
+                </div>
+                <p class="text-slate-500">&copy; 2024 Vishal Mishra. All Rights Reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Custom Cursor Light ---
+            const cursorLight = document.querySelector('.cursor-light');
+            document.addEventListener('mousemove', e => {
+                cursorLight.style.left = e.clientX + 'px';
+                cursorLight.style.top = e.clientY + 'px';
+            });
+
+            // --- 3D Neural Net Animation ---
+            let scene, camera, renderer, particles, lines;
+            let mouse = new THREE.Vector2();
+            const PARTICLE_COUNT = 150;
+            const GROUP_RADIUS = 60;
+
+            function init() {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 120;
+
+                renderer = new THREE.WebGLRenderer({
+                    canvas: document.querySelector('#hero-canvas'),
+                    alpha: true
+                });
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                const particleMaterial = new THREE.PointsMaterial({
+                    color: 0x4f46e5,
+                    size: 2,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    sizeAttenuation: true,
+                });
+
+                const positions = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos((Math.random() * 2) - 1);
+                    const x = GROUP_RADIUS * Math.sin(phi) * Math.cos(theta);
+                    const y = GROUP_RADIUS * Math.sin(phi) * Math.sin(theta);
+                    const z = GROUP_RADIUS * Math.cos(phi);
+                    positions.push(x, y, z);
+                }
+
+                const particleGeometry = new THREE.BufferGeometry();
+                particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                particles = new THREE.Points(particleGeometry, particleMaterial);
+                scene.add(particles);
+
+                const lineMaterial = new THREE.LineBasicMaterial({
+                    color: 0xffffff,
+                    linewidth: 1,
+                    transparent: true,
+                    opacity: 0.05
+                });
+
+                const lineGeometry = new THREE.BufferGeometry();
+                const linePositions = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    for (let j = i + 1; j < PARTICLE_COUNT; j++) {
+                        if (Math.random() > 0.98) { // Connect a small fraction of particles
+                            linePositions.push(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
+                            linePositions.push(positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]);
+                        }
+                    }
+                }
+                lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+                lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+                scene.add(lines);
+
+                window.addEventListener('resize', onWindowResize);
+                document.addEventListener('mousemove', onMouseMove);
+            }
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            function onMouseMove(event) {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            }
+
+            const clock = new THREE.Clock();
+
+            function animate() {
+                const delta = clock.getDelta();
+                
+                if(particles) {
+                    particles.rotation.y += delta * 0.1;
+                    lines.rotation.y += delta * 0.1;
+                    const time = clock.getElapsedTime();
+                    particles.material.size = 1.5 + 0.5 * Math.sin(time * 2);
+                }
+
+                camera.position.x += (mouse.x * 20 - camera.position.x) * 0.05;
+                camera.position.y += (mouse.y * 20 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            }
+
+            init();
+            animate();
+
+            // --- Navbar Scroll Effect ---
+            const navbar = document.getElementById('navbar');
+            window.onscroll = () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-black', 'bg-opacity-50', 'backdrop-blur-sm', 'shadow-lg');
+                } else {
+                    navbar.classList.remove('bg-black', 'bg-opacity-50', 'backdrop-blur-sm', 'shadow-lg');
+                }
+            };
+
+            // --- Mobile Menu Toggle ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // --- Scroll-triggered Fade-in Animation ---
+            const sections = document.querySelectorAll('.fade-in-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</ht>
